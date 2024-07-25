@@ -1,3 +1,4 @@
+const { deleteBook } = require('../controllers/user-controller')
 const User = require('../models/User')
 const { signToken } = require('../utils/auth')
 
@@ -23,6 +24,49 @@ const resolvers = {
 
             return { token, newUser }
         },
+
+        login: async (parent, { username, email, password }) => {
+            const user = await User.findOne({ $or: [{ username: username }, { email: email }] })
+
+            if (!user) {
+                console.log("Can't find user")
+            }
+
+            const correctPw = user.isCorrectPassword(password)
+
+            if (!correctPw) {
+                console.error('incorrect password')
+            }
+
+            const token = signToken(user)
+
+            return { token, user }
+        },
+        savedBook: async (parent, { userId, book }) => {
+            try {
+                const updatedUser = await User.findOneAndUpdate(
+                    { _id: userId },
+                    { $addToSet: { savedBooks: book } },
+                    { new: true, runValidators: true }
+                )
+                return updatedUser
+            } catch (error) {
+                console.error(error)
+            }
+        },
+        deleteBook: async (parent, { userId, bookId }) => {
+            const updatedUser = await User.findByIdAndUpdate(
+                { _id: userId },
+                { $pull: { savedBooks: { bookId: bookId } } },
+                { new: true }
+            )
+
+            if (!updatedUser) {
+                console.error("Couldn't find user with this id")
+            }
+
+            return updatedUser
+        }
     }
 }
 
