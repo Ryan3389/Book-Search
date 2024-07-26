@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React from 'react';
 import {
   Container,
   Card,
@@ -37,10 +37,6 @@ const SavedBooks = () => {
         variables: { bookId }
       });
 
-      // UPDATE USER DATA
-      const updatedUser = data.removeBook;
-      // SET USER DATA TO UPDATED DATA
-      setUserData(updatedUser);
       // upon success, remove book's id from localStorage
       removeBookId(bookId);
     } catch (err) {
@@ -55,7 +51,7 @@ const SavedBooks = () => {
 
   return (
     <>
-      <div fluid className="text-light bg-dark p-5">
+      <div className="text-light bg-dark p-5">
         <Container>
           <h1>Viewing saved books!</h1>
         </Container>
@@ -91,6 +87,8 @@ const SavedBooks = () => {
 };
 
 export default SavedBooks;
+
+
 
 // import { useState, useEffect } from 'react';
 // import {
